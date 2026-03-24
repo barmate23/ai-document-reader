@@ -1,0 +1,411 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary: #6366f1;
+  --primary-end: #a855f7;
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --bg: #0f172a;
+  --card-bg: rgba(30, 41, 59, 0.85);
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: rgba(255, 255, 255, 0.1);
+  --success: #22c55e;
+  --error: #ef4444;
+  --accent: #6366f1;
+}
+
+/* ─── RESET ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100%;
+  overflow: hidden;
+  line-height: 1.6;
+}
+
+h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+
+/* ─── APP SHELL ─────────────────────────────────────── */
+/* This is a strict flex column that fills exactly 100% of the viewport */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem 0.75rem;
+  gap: 0.75rem;
+  overflow: hidden; /* NO scrolling on the outer shell */
+}
+
+/* ─── HEADER ─────────────────────────────────────────── */
+.header {
+  text-align: center;
+  flex-shrink: 0; /* header NEVER grows or shrinks */
+}
+
+.header h1 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.2;
+}
+
+.header p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 0.15rem;
+}
+
+/* ─── MAIN GRID ──────────────────────────────────────── */
+/* flex:1 + min-height:0 is the magic combo that lets children
+   control their own scroll without expanding the grid row */
+.main-content {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.25rem;
+  flex: 1;
+  min-height: 0; /* KEY: allows children to shrink below content size */
+  overflow: hidden;
+}
+
+/* ─── CARDS ──────────────────────────────────────────── */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* KEY: must be set on all flex children that need scroll */
+  overflow: hidden; /* contain children */
+}
+
+.card h2 {
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  margin-bottom: 0.75rem;
+}
+
+/* ─── LEFT PANEL – upload is flex-column, static, no scroll ─ */
+.sidebar-card {
+  /* inherits .card — content is small enough to fit; no scroll needed */
+  overflow: hidden;
+}
+
+/* ─── UPLOAD AREA ────────────────────────────────────── */
+.upload-area {
+  border: 2px dashed var(--border);
+  border-radius: 0.875rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.upload-area:hover, .upload-area.dragging {
+  border-color: var(--accent);
+  background: rgba(99,102,241,0.06);
+}
+
+.upload-area input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+/* ─── STATUS BADGE ───────────────────────────────────── */
+.status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.status.success { background: rgba(34,197,94,0.1); color: var(--success); border: 1px solid rgba(34,197,94,0.25); }
+.status.error   { background: rgba(239,68,68,0.1);  color: var(--error);   border: 1px solid rgba(239,68,68,0.25); }
+
+/* ─── CLEAR BUTTON ───────────────────────────────────── */
+.btn-clear {
+  margin-top: auto; /* push to bottom of sidebar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.btn-clear:hover {
+  background: rgba(239,68,68,0.1);
+  color: var(--error);
+  border-color: rgba(239,68,68,0.4);
+}
+
+/* ─── MODE TOGGLE ────────────────────────────────────── */
+.mode-toggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.25rem;
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 0.6rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mode-btn.active {
+  background: var(--primary-gradient);
+  color: white;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+}
+
+/* ─── TEXT INGEST AREA ───────────────────────────────── */
+.text-ingest-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+  min-height: 0;
+}
+
+.ingest-textarea {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  color: white;
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: none;
+  min-height: 120px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.ingest-textarea:focus {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.btn-ingest-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  border: none;
+  background: var(--primary-gradient);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.btn-ingest-text:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ─── CHAT CARD ──────────────────────────────────────── */
+/* The chat card IS a flex column. Its children are:
+   1. .chat-messages  → flex:1, overflow-y:auto  ← ONLY this scrolls
+   2. .chat-input-area → flex-shrink:0            ← always visible */
+.chat-card {
+  /* inherits .card */
+}
+
+/* ─── MESSAGES AREA ──────────────────────────────────── */
+.chat-messages {
+  flex: 1;
+  min-height: 0;        /* let it shrink so input bar stays visible */
+  overflow-y: auto;     /* scroll HERE, not on the page */
+  padding: 0.5rem 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
+}
+
+.chat-messages::-webkit-scrollbar { width: 5px; }
+.chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+
+/* ─── BUBBLES ────────────────────────────────────────── */
+.message-row {
+  display: flex;
+  gap: 0.6rem;
+  max-width: 85%;
+}
+
+.message-row.ai  { align-self: flex-start; }
+.message-row.user { 
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.bubble-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.message-row.ai  .bubble-icon { background: rgba(99,102,241,0.2); color: var(--primary); }
+.message-row.user .bubble-icon { background: rgba(168,85,247,0.2); color: #a855f7; }
+
+.bubble {
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.925rem;
+  line-height: 1.55;
+}
+
+.message-row.ai  .bubble {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 0.2rem;
+}
+
+.message-row.user .bubble {
+  background: var(--primary-gradient);
+  color: #fff;
+  border-bottom-right-radius: 0.2rem;
+}
+
+/* ─── TYPING INDICATOR ───────────────────────────────── */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-style: italic;
+  padding: 0.25rem 0;
+  flex-shrink: 0;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }
+
+/* ─── INPUT BAR ──────────────────────────────────────── */
+.chat-input-area {
+  flex-shrink: 0; /* NEVER shrink; always visible */
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  margin-top: 0.5rem;
+}
+
+.chat-input {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: white;
+  font-family: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.chat-input:focus {
+  border-color: var(--accent);
+  background: rgba(255,255,255,0.1);
+}
+
+.chat-input::placeholder { color: var(--text-muted); }
+
+.btn-ask {
+  flex-shrink: 0;
+  padding: 0 1.25rem;
+  background: var(--primary-gradient);
+  color: #fff;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.925rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  white-space: nowrap;
+}
+
+.btn-ask:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+.btn-ask:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ─── ANIMATIONS ─────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+.message-row { animation: fadeUp 0.25s ease-out both; }
+
+/* ─── FOOTER ─────────────────────────────────────────── */
+.footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  flex-shrink: 0;
+  padding-bottom: 0.25rem;
+}
